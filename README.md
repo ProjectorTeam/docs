@@ -1,1 +1,1 @@
-# Docs for songprojector
+# [Docs for songprojector]https://projectorteam.github.io/songprojector/
