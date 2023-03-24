@@ -1,0 +1,252 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is a sample JWT authentication service. You can find out more about JWT
+    at [https://jwt.io/](https://jwt.io/). For this sample, you can use the
+    `admin` or `client` users (password: admin and client respectively) to test
+    the authorization filters. Once you have successfully logged in and obtained
+    the token, you should click on the right top button `Authorize` and
+    introduce it with the prefix "Bearer ".
+  version: 1.0.0
+  title: JSON Web Token Authentication API
+  contact:
+    email: mauriurraco@gmail.com
+  license:
+    name: MIT License
+    url: http://opensource.org/licenses/MIT
+host: localhost:8080
+basePath: /
+tags:
+  - name: users
+    description: Operations about users
+paths:
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Returns current user's data
+      operationId: whoamiUsingGET
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+  /users/refresh:
+    get:
+      tags:
+        - users
+      summary: refresh
+      operationId: refreshUsingGET
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/signin:
+    post:
+      tags:
+        - users
+      summary: Authenticates user and returns its JWT token.
+      operationId: loginUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: password
+          in: query
+          description: Password
+          required: false
+          type: string
+          allowEmptyValue: false
+        - name: username
+          in: query
+          description: Username
+          required: false
+          type: string
+          allowEmptyValue: false
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Something went wrong
+        '422':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/signup:
+    post:
+      tags:
+        - users
+      summary: Creates user and returns its JWT token
+      operationId: signupUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: user
+          description: Signup User
+          required: false
+          schema:
+            $ref: '#/definitions/UserDataDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '422':
+          description: Username is already in use
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/you:
+    get:
+      tags:
+        - users
+      summary: you
+      operationId: youUsingGET
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponseDTO'
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Returns specific user by username
+      operationId: searchUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+    delete:
+      tags:
+        - users
+      summary: Deletes specific user by username
+      operationId: deleteUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  UserDataDTO:
+    type: object
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      appUserRoles:
+        type: array
+        items:
+          type: string
+          enum:
+            - ROLE_ADMIN
+            - ROLE_CLIENT
+    title: UserDataDTO
+  UserResponseDTO:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      username:
+        type: string
+      email:
+        type: string
+      appUserRoles:
+        type: array
+        items:
+          type: string
+          enum:
+            - ROLE_ADMIN
+            - ROLE_CLIENT
+    title: UserResponseDTO
