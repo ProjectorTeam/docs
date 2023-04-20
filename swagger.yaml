@@ -14,6 +14,27 @@ tags:
   - name: users
     description: Operations about users
 paths:
+  /users/codes:
+    post:
+      tags:
+        - users
+      summary: Create invitation code
+      operationId: createcodeUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '403':
+          description: Invalid token
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /users/me:
     get:
       tags:
@@ -229,6 +250,8 @@ definitions:
   UserDataDTO:
     type: object
     properties:
+      code:
+        type: string
       email:
         type: string
       organizationName:
@@ -254,5 +277,4 @@ definitions:
           enum:
             - ADMIN_ORG
             - MEMBER_ORG
-            - NO_ORG
     title: UserResponseDTO
