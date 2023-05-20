@@ -11,9 +11,126 @@ info:
 host: localhost:8080
 basePath: /
 tags:
+  - name: songs
+    description: Song Controller
+  - name: tags
+    description: Tag Controller
   - name: users
     description: Operations about users
 paths:
+  /songs:
+    get:
+      tags:
+        - songs
+      summary: ${UserController.getallsongs}
+      operationId: getAllUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+          default: 0
+          format: int32
+        - name: size
+          in: query
+          description: size
+          required: false
+          type: integer
+          default: 20
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Page«SongDTO»'
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    post:
+      tags:
+        - songs
+      summary: ${UserController.createsong}
+      operationId: createSongUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: songDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/SongDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /tags:
+    get:
+      tags:
+        - tags
+      summary: Return all tags
+      operationId: getAllUsingGET_1
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TagDTO'
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    post:
+      tags:
+        - tags
+      summary: Create new tag
+      operationId: createTagUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: tagDTO
+          description: Tag
+          required: false
+          schema:
+            $ref: '#/definitions/TagDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TagDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /users/codes:
     post:
       tags:
@@ -78,7 +195,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/TokenDTO'
         '401':
           description: Invalid refresh token
       security:
@@ -141,23 +258,6 @@ paths:
           description: Something went wrong
         '409':
           description: Username is already in use
-      security:
-        - Authorization:
-            - global
-      deprecated: false
-  /users/you:
-    get:
-      tags:
-        - users
-      summary: you
-      operationId: youUsingGET
-      produces:
-        - '*/*'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/UserResponseDTO'
       security:
         - Authorization:
             - global
@@ -239,6 +339,92 @@ definitions:
       password:
         type: string
     title: LoginDataDTO
+  Pageable:
+    type: object
+    properties:
+      offset:
+        type: integer
+        format: int64
+      pageNumber:
+        type: integer
+        format: int32
+      pageSize:
+        type: integer
+        format: int32
+      paged:
+        type: boolean
+      sort:
+        $ref: '#/definitions/Sort'
+      unpaged:
+        type: boolean
+    title: Pageable
+  Page«SongDTO»:
+    type: object
+    properties:
+      content:
+        type: array
+        items:
+          $ref: '#/definitions/SongDTO'
+      empty:
+        type: boolean
+      first:
+        type: boolean
+      last:
+        type: boolean
+      number:
+        type: integer
+        format: int32
+      numberOfElements:
+        type: integer
+        format: int32
+      pageable:
+        $ref: '#/definitions/Pageable'
+      size:
+        type: integer
+        format: int32
+      sort:
+        $ref: '#/definitions/Sort'
+      totalElements:
+        type: integer
+        format: int64
+      totalPages:
+        type: integer
+        format: int32
+    title: Page«SongDTO»
+  SongDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      lyrics:
+        type: string
+      name:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+    title: SongDTO
+  Sort:
+    type: object
+    properties:
+      empty:
+        type: boolean
+      sorted:
+        type: boolean
+      unsorted:
+        type: boolean
+    title: Sort
+  TagDTO:
+    type: object
+    properties:
+      color:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    title: TagDTO
   TokenDTO:
     type: object
     properties:
@@ -250,9 +436,9 @@ definitions:
   UserDataDTO:
     type: object
     properties:
-      code:
-        type: string
       email:
+        type: string
+      organizationCode:
         type: string
       organizationName:
         type: string
@@ -270,7 +456,473 @@ definitions:
         type: string
       email:
         type: string
-      appUserRoles:
+      userRoles:
+        type: array
+        items:
+          type: string
+          enum:
+            - ADMIN_ORG
+            - MEMBER_ORG
+    title: UserResponseDTO
+swagger: '2.0'
+info:
+  description: This is Song projector Middleware service.
+  version: 1.0.0
+  title: Song projector Middleware service
+  contact:
+    email: songprojector@gmail.com
+  license:
+    name: MIT License
+    url: http://opensource.org/licenses/MIT
+host: localhost:8080
+basePath: /
+tags:
+  - name: songs
+    description: Song Controller
+  - name: tags
+    description: Tag Controller
+  - name: users
+    description: Operations about users
+paths:
+  /songs:
+    get:
+      tags:
+        - songs
+      summary: ${UserController.getallsongs}
+      operationId: getAllUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+          default: 0
+          format: int32
+        - name: size
+          in: query
+          description: size
+          required: false
+          type: integer
+          default: 20
+          format: int32
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Page«SongDTO»'
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    post:
+      tags:
+        - songs
+      summary: ${UserController.createsong}
+      operationId: createSongUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: songDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/SongDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /tags:
+    get:
+      tags:
+        - tags
+      summary: Return all tags
+      operationId: getAllUsingGET_1
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TagDTO'
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    post:
+      tags:
+        - tags
+      summary: Create new tag
+      operationId: createTagUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: tagDTO
+          description: Tag
+          required: false
+          schema:
+            $ref: '#/definitions/TagDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TagDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/codes:
+    post:
+      tags:
+        - users
+      summary: Create invitation code
+      operationId: createcodeUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '403':
+          description: Invalid token
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Returns current user's data
+      operationId: whoamiUsingGET
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+  /users/refresh:
+    get:
+      tags:
+        - users
+      summary: Refreshes the Access token
+      operationId: refreshUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: refreshToken
+          description: Refresh Token
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TokenDTO'
+        '401':
+          description: Invalid refresh token
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/signin:
+    post:
+      tags:
+        - users
+      summary: Authenticates user and returns Access token and Refresh token
+      operationId: loginUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: loginData
+          description: Signup User
+          required: false
+          schema:
+            $ref: '#/definitions/LoginDataDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TokenDTO'
+        '400':
+          description: Something went wrong
+        '401':
+          description: Invalid username/password supplied
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/signup:
+    post:
+      tags:
+        - users
+      summary: Creates user and returns Access token and Refresh token
+      operationId: signupUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: user
+          description: Signup User
+          required: false
+          schema:
+            $ref: '#/definitions/UserDataDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TokenDTO'
+        '400':
+          description: Something went wrong
+        '409':
+          description: Username is already in use
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Returns specific user by username
+      operationId: searchUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponseDTO'
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+    delete:
+      tags:
+        - users
+      summary: Deletes specific user by username
+      operationId: deleteUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '400':
+          description: Something went wrong
+        '403':
+          description: Access denied
+        '404':
+          description: The user doesn't exist
+        '500':
+          description: Expired or invalid JWT token
+      security:
+        - Authorization:
+            - global
+        - apiKey: []
+      deprecated: false
+securityDefinitions:
+  Authorization:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  LoginDataDTO:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+    title: LoginDataDTO
+  Pageable:
+    type: object
+    properties:
+      offset:
+        type: integer
+        format: int64
+      pageNumber:
+        type: integer
+        format: int32
+      pageSize:
+        type: integer
+        format: int32
+      paged:
+        type: boolean
+      sort:
+        $ref: '#/definitions/Sort'
+      unpaged:
+        type: boolean
+    title: Pageable
+  Page«SongDTO»:
+    type: object
+    properties:
+      content:
+        type: array
+        items:
+          $ref: '#/definitions/SongDTO'
+      empty:
+        type: boolean
+      first:
+        type: boolean
+      last:
+        type: boolean
+      number:
+        type: integer
+        format: int32
+      numberOfElements:
+        type: integer
+        format: int32
+      pageable:
+        $ref: '#/definitions/Pageable'
+      size:
+        type: integer
+        format: int32
+      sort:
+        $ref: '#/definitions/Sort'
+      totalElements:
+        type: integer
+        format: int64
+      totalPages:
+        type: integer
+        format: int32
+    title: Page«SongDTO»
+  SongDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      lyrics:
+        type: string
+      name:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+    title: SongDTO
+  Sort:
+    type: object
+    properties:
+      empty:
+        type: boolean
+      sorted:
+        type: boolean
+      unsorted:
+        type: boolean
+    title: Sort
+  TagDTO:
+    type: object
+    properties:
+      color:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    title: TagDTO
+  TokenDTO:
+    type: object
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    title: TokenDTO
+  UserDataDTO:
+    type: object
+    properties:
+      email:
+        type: string
+      organizationCode:
+        type: string
+      organizationName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    title: UserDataDTO
+  UserResponseDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      userRoles:
         type: array
         items:
           type: string
