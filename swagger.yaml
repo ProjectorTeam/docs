@@ -177,11 +177,13 @@ paths:
         - apiKey: []
       deprecated: false
   /users/refresh:
-    get:
+    post:
       tags:
         - users
       summary: Refreshes the Access token
-      operationId: refreshUsingGET
+      operationId: refreshUsingPOST
+      consumes:
+        - application/json
       produces:
         - '*/*'
       parameters:
