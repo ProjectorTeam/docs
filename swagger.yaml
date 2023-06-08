@@ -22,11 +22,16 @@ paths:
     get:
       tags:
         - songs
-      summary: ${UserController.getallsongs}
+      summary: Return all songs
       operationId: getAllUsingGET
       produces:
         - '*/*'
       parameters:
+        - name: name
+          in: query
+          description: name
+          required: true
+          type: string
         - name: page
           in: query
           description: page
@@ -45,7 +50,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Page«SongDTO»'
+            $ref: '#/definitions/SongPageDTO«SongSimpleDTO»'
+        '400':
+          description: Bad request
         '401':
           description: Unauthorized
       security:
@@ -55,7 +62,7 @@ paths:
     post:
       tags:
         - songs
-      summary: ${UserController.createsong}
+      summary: Create new song
       operationId: createSongUsingPOST
       consumes:
         - application/json
@@ -77,6 +84,35 @@ paths:
           description: Bad request
         '401':
           description: Unauthorized
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /songs/{songId}:
+    get:
+      tags:
+        - songs
+      summary: Return a specific song
+      operationId: getSongUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: songId
+          in: path
+          description: songId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Song not found
+        '409':
+          description: User and song not in the same organisation
       security:
         - Authorization:
             - global
@@ -341,58 +377,6 @@ definitions:
       password:
         type: string
     title: LoginDataDTO
-  Pageable:
-    type: object
-    properties:
-      offset:
-        type: integer
-        format: int64
-      pageNumber:
-        type: integer
-        format: int32
-      pageSize:
-        type: integer
-        format: int32
-      paged:
-        type: boolean
-      sort:
-        $ref: '#/definitions/Sort'
-      unpaged:
-        type: boolean
-    title: Pageable
-  Page«SongDTO»:
-    type: object
-    properties:
-      content:
-        type: array
-        items:
-          $ref: '#/definitions/SongDTO'
-      empty:
-        type: boolean
-      first:
-        type: boolean
-      last:
-        type: boolean
-      number:
-        type: integer
-        format: int32
-      numberOfElements:
-        type: integer
-        format: int32
-      pageable:
-        $ref: '#/definitions/Pageable'
-      size:
-        type: integer
-        format: int32
-      sort:
-        $ref: '#/definitions/Sort'
-      totalElements:
-        type: integer
-        format: int64
-      totalPages:
-        type: integer
-        format: int32
-    title: Page«SongDTO»
   SongDTO:
     type: object
     properties:
@@ -407,16 +391,33 @@ definitions:
         items:
           type: string
     title: SongDTO
-  Sort:
+  SongPageDTO«SongSimpleDTO»:
     type: object
     properties:
-      empty:
+      content:
+        type: array
+        items:
+          $ref: '#/definitions/SongSimpleDTO'
+      lastPage:
         type: boolean
-      sorted:
-        type: boolean
-      unsorted:
-        type: boolean
-    title: Sort
+      pageNumber:
+        type: integer
+        format: int32
+      pageSize:
+        type: integer
+        format: int32
+      totalSize:
+        type: integer
+        format: int64
+    title: SongPageDTO«SongSimpleDTO»
+  SongSimpleDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    title: SongSimpleDTO
   TagDTO:
     type: object
     properties:
