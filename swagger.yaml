@@ -88,6 +88,35 @@ paths:
         - Authorization:
             - global
       deprecated: false
+    put:
+      tags:
+        - songs
+      summary: Updates a song
+      operationId: updateSongUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: songDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/SongDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '401':
+          description: Invalid username/password supplied
+        '409':
+          description: Conflicting user and song organizations
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /songs/{songId}:
     get:
       tags:
@@ -112,7 +141,7 @@ paths:
         '404':
           description: Song not found
         '409':
-          description: User and song not in the same organisation
+          description: User and song not in the same organization
       security:
         - Authorization:
             - global
@@ -163,6 +192,35 @@ paths:
           description: Bad request
         '401':
           description: Unauthorized
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    put:
+      tags:
+        - tags
+      summary: ${TagController.updateTsg}
+      operationId: updateTagUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: tagDTO
+          description: Tag
+          required: false
+          schema:
+            $ref: '#/definitions/TagDTO'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '401':
+          description: Unauthorized
+        '404':
+          description: Tag not found
       security:
         - Authorization:
             - global
