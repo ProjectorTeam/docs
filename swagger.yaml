@@ -11,6 +11,8 @@ info:
 host: localhost:8080
 basePath: /
 tags:
+  - name: playlists
+    description: Playlist Controller
   - name: songs
     description: Song Controller
   - name: tags
@@ -18,12 +20,161 @@ tags:
   - name: users
     description: Operations about users
 paths:
+  /playlists:
+    get:
+      tags:
+        - playlists
+      summary: Return all playlists
+      operationId: getAllUsingGET
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PlaylistSimpleDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Playlist not found
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    post:
+      tags:
+        - playlists
+      summary: Create new playlist
+      operationId: createPlaylistUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: playlistDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/PlaylistDTO'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/PlaylistDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+  /playlists/{playlistId}:
+    get:
+      tags:
+        - playlists
+      summary: Return a specific playlist
+      operationId: getPlaylistUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: playlistId
+          in: path
+          description: playlistId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/PlaylistDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Playlist not found
+        '409':
+          description: Playlist and user don't belong to the same organization
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    put:
+      tags:
+        - playlists
+      summary: Updates a specific playlist
+      operationId: updatePlaylistUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: playlistDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/PlaylistDTO'
+        - name: playlistId
+          in: path
+          description: playlistId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Playlist not found
+        '409':
+          description: Playlist and user don't belong to the same organization
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    delete:
+      tags:
+        - playlists
+      summary: Deletes a specific playlist
+      operationId: deletePlaylistUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: playlistId
+          in: path
+          description: playlistId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Playlist not found
+        '409':
+          description: Playlist and user don't belong to the same organization
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /songs:
     get:
       tags:
         - songs
       summary: Return all songs
-      operationId: getAllUsingGET
+      operationId: getAllUsingGET_1
       produces:
         - '*/*'
       parameters:
@@ -76,8 +227,8 @@ paths:
           schema:
             $ref: '#/definitions/SongDTO'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           schema:
             $ref: '#/definitions/SongDTO'
         '400':
@@ -117,6 +268,29 @@ paths:
         - Authorization:
             - global
       deprecated: false
+  /songs/dual-display:
+    post:
+      tags:
+        - songs
+      summary: Import song from DualDisplay archive
+      operationId: importDualDisplayUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /songs/{songId}:
     get:
       tags:
@@ -151,7 +325,7 @@ paths:
       tags:
         - tags
       summary: Return all tags
-      operationId: getAllUsingGET_1
+      operationId: getAllUsingGET_2
       produces:
         - '*/*'
       responses:
@@ -184,8 +358,8 @@ paths:
           schema:
             $ref: '#/definitions/TagDTO'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           schema:
             $ref: '#/definitions/TagDTO'
         '400':
@@ -199,7 +373,7 @@ paths:
     put:
       tags:
         - tags
-      summary: ${TagController.updateTsg}
+      summary: Update a specific tag
       operationId: updateTagUsingPUT
       consumes:
         - application/json
@@ -225,6 +399,31 @@ paths:
         - Authorization:
             - global
       deprecated: false
+  /tags/{tagId}:
+    delete:
+      tags:
+        - tags
+      summary: Delete a specific tag
+      operationId: deleteTagUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: tagId
+          in: path
+          description: Tag id
+          required: false
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '404':
+          description: Tag not found
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /users/codes:
     post:
       tags:
@@ -236,8 +435,8 @@ paths:
       produces:
         - '*/*'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           schema:
             type: string
         '401':
@@ -346,8 +545,8 @@ paths:
           schema:
             $ref: '#/definitions/UserDataDTO'
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           schema:
             $ref: '#/definitions/TokenDTO'
         '400':
@@ -404,8 +603,8 @@ paths:
           required: false
           type: string
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
           schema:
             type: string
         '400':
@@ -435,6 +634,26 @@ definitions:
       password:
         type: string
     title: LoginDataDTO
+  PlaylistDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      songs:
+        type: array
+        items:
+          $ref: '#/definitions/SongForPlaylistDTO'
+    title: PlaylistDTO
+  PlaylistSimpleDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    title: PlaylistSimpleDTO
   SongDTO:
     type: object
     properties:
@@ -449,6 +668,17 @@ definitions:
         items:
           type: string
     title: SongDTO
+  SongForPlaylistDTO:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      songOrder:
+        type: integer
+        format: int32
+    title: SongForPlaylistDTO
   SongPageDTO«SongSimpleDTO»:
     type: object
     properties:
