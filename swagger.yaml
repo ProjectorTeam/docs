@@ -24,7 +24,7 @@ paths:
     get:
       tags:
         - playlists
-      summary: Return all playlists
+      summary: Returns all playlists
       operationId: getAllUsingGET
       produces:
         - '*/*'
@@ -48,7 +48,7 @@ paths:
     post:
       tags:
         - playlists
-      summary: Create new playlist
+      summary: Creates new playlist
       operationId: createPlaylistUsingPOST
       consumes:
         - application/json
@@ -78,7 +78,7 @@ paths:
     get:
       tags:
         - playlists
-      summary: Return a specific playlist
+      summary: Returns a specific playlist
       operationId: getPlaylistUsingGET
       produces:
         - '*/*'
@@ -173,7 +173,7 @@ paths:
     get:
       tags:
         - songs
-      summary: Return all songs
+      summary: Returns all songs
       operationId: getAllUsingGET_1
       produces:
         - '*/*'
@@ -213,7 +213,7 @@ paths:
     post:
       tags:
         - songs
-      summary: Create new song
+      summary: Creates new song
       operationId: createSongUsingPOST
       consumes:
         - application/json
@@ -272,7 +272,7 @@ paths:
     post:
       tags:
         - songs
-      summary: Import song from DualDisplay archive
+      summary: Imports song from DualDisplay archive
       operationId: importDualDisplayUsingPOST
       consumes:
         - application/json
@@ -295,7 +295,7 @@ paths:
     get:
       tags:
         - songs
-      summary: Return a specific song
+      summary: Returns a specific song
       operationId: getSongUsingGET
       produces:
         - '*/*'
@@ -320,11 +320,37 @@ paths:
         - Authorization:
             - global
       deprecated: false
+    delete:
+      tags:
+        - songs
+      summary: Deletes a specific song
+      operationId: deleteSongUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: songId
+          in: path
+          description: songId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '404':
+          description: Song not found
+        '409':
+          description: User and song not in the same organization
+      security:
+        - Authorization:
+            - global
+      deprecated: false
   /tags:
     get:
       tags:
         - tags
-      summary: Return all tags
+      summary: Returns all tags
       operationId: getAllUsingGET_2
       produces:
         - '*/*'
@@ -344,7 +370,7 @@ paths:
     post:
       tags:
         - tags
-      summary: Create new tag
+      summary: Creates new tag
       operationId: createTagUsingPOST
       consumes:
         - application/json
@@ -370,10 +396,11 @@ paths:
         - Authorization:
             - global
       deprecated: false
+  /tags/{tagId}:
     put:
       tags:
         - tags
-      summary: Update a specific tag
+      summary: Updates a specific tag
       operationId: updateTagUsingPUT
       consumes:
         - application/json
@@ -386,6 +413,11 @@ paths:
           required: false
           schema:
             $ref: '#/definitions/TagDTO'
+        - name: tagId
+          in: path
+          description: Tag id
+          required: false
+          type: string
       responses:
         '200':
           description: OK
@@ -395,15 +427,16 @@ paths:
           description: Unauthorized
         '404':
           description: Tag not found
+        '409':
+          description: Tag and user don't belong to the same organizations
       security:
         - Authorization:
             - global
       deprecated: false
-  /tags/{tagId}:
     delete:
       tags:
         - tags
-      summary: Delete a specific tag
+      summary: Deletes a specific tag
       operationId: deleteTagUsingDELETE
       produces:
         - '*/*'
@@ -420,6 +453,8 @@ paths:
           description: Unauthorized
         '404':
           description: Tag not found
+        '409':
+          description: Tag and user don't belong to the same organizations
       security:
         - Authorization:
             - global
@@ -428,7 +463,7 @@ paths:
     post:
       tags:
         - users
-      summary: Create invitation code
+      summary: Creates invitation code
       operationId: createcodeUsingPOST
       consumes:
         - application/json
