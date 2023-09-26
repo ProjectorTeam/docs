@@ -852,6 +852,11 @@ definitions:
         type: string
       password:
         type: string
+      type:
+        type: string
+        enum:
+          - admin
+          - member
       username:
         type: string
     title: UserDataDTO
