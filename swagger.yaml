@@ -846,9 +846,7 @@ definitions:
     properties:
       email:
         type: string
-      organizationCode:
-        type: string
-      organizationName:
+      organization:
         type: string
       password:
         type: string
