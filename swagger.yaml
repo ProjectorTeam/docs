@@ -173,15 +173,20 @@ paths:
     get:
       tags:
         - songs
-      summary: Search songs by name
-      operationId: searchSongsByNameUsingGET
+      summary: Search songs by name or tags or lyrics
+      operationId: searchSongsUsingGET
       produces:
         - '*/*'
       parameters:
+        - name: lyrics
+          in: query
+          description: lyrics
+          required: false
+          type: string
         - name: name
           in: query
           description: name
-          required: true
+          required: false
           type: string
         - name: page
           in: query
@@ -197,6 +202,11 @@ paths:
           type: integer
           default: 200
           format: int32
+        - name: tags
+          in: query
+          description: tags
+          required: false
+          type: string
       responses:
         '200':
           description: OK
@@ -283,60 +293,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/SongDTO'
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-      security:
-        - Authorization:
-            - global
-      deprecated: false
-  /songs/lyrics:
-    get:
-      tags:
-        - songs
-      summary: Search songs by lyrics
-      operationId: searchSongsByLyricsUsingGET
-      produces:
-        - '*/*'
-      parameters:
-        - name: lyrics
-          in: query
-          description: lyrics
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/SongPageDTO«SongSimpleDTO»'
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-      security:
-        - Authorization:
-            - global
-      deprecated: false
-  /songs/tags:
-    get:
-      tags:
-        - songs
-      summary: Search songs by tags
-      operationId: searchSongsByTagsUsingGET
-      produces:
-        - '*/*'
-      parameters:
-        - name: tags
-          in: query
-          description: tags
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/SongPageDTO«SongSimpleDTO»'
         '400':
           description: Bad request
         '401':
