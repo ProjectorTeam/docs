@@ -249,35 +249,6 @@ paths:
         - Authorization:
             - global
       deprecated: false
-    put:
-      tags:
-        - songs
-      summary: Updates a song
-      operationId: updateSongUsingPUT
-      consumes:
-        - application/json
-      produces:
-        - '*/*'
-      parameters:
-        - in: body
-          name: songDTO
-          description: Song
-          required: false
-          schema:
-            $ref: '#/definitions/SongDTO'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/SongDTO'
-        '401':
-          description: Invalid username/password supplied
-        '409':
-          description: Conflicting user and song organizations
-      security:
-        - Authorization:
-            - global
-      deprecated: false
   /songs/dual-display:
     post:
       tags:
@@ -326,6 +297,40 @@ paths:
           description: Song not found
         '409':
           description: User and song not in the same organization
+      security:
+        - Authorization:
+            - global
+      deprecated: false
+    put:
+      tags:
+        - songs
+      summary: Updates a song
+      operationId: updateSongUsingPUT
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: songDTO
+          description: Song
+          required: false
+          schema:
+            $ref: '#/definitions/SongDTO'
+        - name: songId
+          in: path
+          description: songId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SongDTO'
+        '401':
+          description: Invalid username/password supplied
+        '409':
+          description: Conflicting user and song organizations
       security:
         - Authorization:
             - global
@@ -733,7 +738,9 @@ definitions:
       id:
         type: string
       lyrics:
-        type: string
+        type: array
+        items:
+          type: string
       name:
         type: string
       tags:
